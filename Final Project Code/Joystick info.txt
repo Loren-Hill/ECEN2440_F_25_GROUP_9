@@ -1,0 +1,47 @@
+To find a simple and easy way to move robot, we will use this formula
+
+Percentage for one axis = (Current Value) - (Min Value) / (Max Value) - (Min Value)
+
+There are 4 quadrants
+	Up
+	Down
+	Left
+	Right
+
+Need to read X and Y value from joystick, Determine quadrant, apply formula, then send through hex.
+
+Maybe instead of sending thousands of possible value, we have 10 or so for each direction?
+
+do math on joystick, then send to main robot
+
+analog values ranging from 0 to 1023.
+
+joystick documentation:
+	https://learn.adafruit.com/gamepad-qt/overview
+	https://learn.adafruit.com/gamepad-qt/circuitpython-and-python
+
+Dont know how to handle yet how to stop robot
+
+First implementation:
+	Each direction of analog joy stick is going to correlate with a 100% motor in that direction
+	Analog goes from 0 to 1023
+	Aprox middle point is ~510
+	I.E
+		Left is x 0, y in middle
+		Right is x 1023, y in middle
+		Up is x in middle, y 1023
+		Down is x in middle, y 0
+	For sending over IR in this implementation, we will use address hex for x and command for y
+	
+	We need to define a hex value for each state
+		one for 0
+		one for 1023 
+		on each axis
+	4 commands for each state possible state of motors
+	0x00 = motor 1 and motor 2 forward
+	0x01 = motor 1 and motor 2 backwards
+	0x02 = motor 1 forwards and motor 2 backwards
+	0x03 = motor 1 backwards and motor 2 forward
+	
+	
+		
