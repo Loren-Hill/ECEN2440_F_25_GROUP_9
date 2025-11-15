@@ -19,7 +19,8 @@ RMotorPWM = 16
 IRRPin = 15
 
 # This is Motor Code
-
+# Start ticker from code start
+start = time.ticks_ms()
 
 pwm_rate = 2000
 #change pins if needed
@@ -40,6 +41,7 @@ def ir_callback(data, addr, _):
     # Check if address bit is right, if so reset recieved command flag
     # Once a command is recieved, start a timer.
     # Start ticker from code start, every 300 ms turn off motors
+    global start
     start = time.ticks_ms()
     if (data == 0):
         print("Motor Forward") # Print to REPL
@@ -75,8 +77,7 @@ ir_pin = Pin(IRRPin, Pin.IN, Pin.PULL_UP) # Adjust the pin number based on your 
 
 ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
-# Start ticker from code start
-start = time.ticks_ms()
+
 
 while True:
     now = time.ticks_ms()
