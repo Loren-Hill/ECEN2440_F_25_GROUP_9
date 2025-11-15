@@ -36,6 +36,9 @@ pwm = min(max(int(2**16 * abs(1)), 0), 65535)
 def ir_callback(data, addr, _):
     # print(f"Received NEC command! Data: 0x{data:02X}, Addr: 0x{addr:02X}")
     # Check if address bit is right, if so reset recieved command flag
+    # Once a command is recieved, start a timer.
+    # Start ticker from code start, every 300 ms turn off motors
+    start = time.ticks_ms()
     if (data == 0):
         print("Motor Forward") # Print to REPL
         Left_Motor.low() 
@@ -62,8 +65,6 @@ def ir_callback(data, addr, _):
         Right_Motor_PWM.duty_u16(pwm)              
     else: 
         print("no idea what that is")
-    # Delay of 100 ms
-    time.sleep(0.1)
 
 # This Is reciever Code
 
@@ -72,17 +73,16 @@ ir_pin = Pin(IRRPin, Pin.IN, Pin.PULL_UP) # Adjust the pin number based on your 
 
 ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
-# Start ticker from code start, every 300 ms turn off motors
-start = time.ticks_ms()
+
 while True:
     now = time.ticks_ms()
 # Will count how long in between each signal, if that is over 300 ms, stop all motors.
     if (time.ticks_diff(now,start) >= 300):
         print("Motor off") # Print to REPL
-        Left_Motor.high() 
-        Left_Motor_PWM.duty_u16(pwm) 
-        Right_Motor.high() 
-        Right_Motor_PWM.duty_u16(pwm)
+        Left_Motor.low() 
+        Left_Motor_PWM.duty_u16(0) 
+        Right_Motor.low() 
+        Right_Motor_PWM.duty_u16(0)
         # Reset timer
         start = now
     # sleep as to not slam cpu
