@@ -31,6 +31,8 @@ Right_Motor_PWM = PWM(RMotorPWM, freq = pwm_rate, duty_u16 = 0)
 
 pwm = min(max(int(2**16 * abs(1)), 0), 65535)
 
+
+
 # Callback function to execute when an IR code is received
 
 def ir_callback(data, addr, _):
@@ -73,6 +75,8 @@ ir_pin = Pin(IRRPin, Pin.IN, Pin.PULL_UP) # Adjust the pin number based on your 
 
 ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
+# Start ticker from code start
+start = time.ticks_ms()
 
 while True:
     now = time.ticks_ms()
