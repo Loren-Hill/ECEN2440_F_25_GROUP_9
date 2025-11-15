@@ -11,12 +11,12 @@ from ir_rx.print_error import print_error # for debugging
 time.sleep(1) # Wait for USB to become ready
 # CHANGE VARIABLES TO WHAT YOUR PINOUT IS
 # Pinout variables
-LMotor = 19
-LMotorPWM = 18
-RMotor = 17
-RMotorPWM = 16
+LMotor = 13
+LMotorPWM = 12
+RMotor = 11
+RMotorPWM = 10
 
-IRRPin = 15
+IRRPin = 17
 
 # This is Motor Code
 # Start ticker from code start
@@ -41,8 +41,8 @@ def ir_callback(data, addr, _):
     # Check if address bit is right, if so reset recieved command flag
     # Once a command is recieved, start a timer.
     # Start ticker from code start, every 300 ms turn off motors
-    #global start
-    #start = time.ticks_ms()
+    global start
+    start = time.ticks_ms()
     if (data == 0):
         print("Motor Forward") # Print to REPL
         Left_Motor.low() 
@@ -80,7 +80,7 @@ ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
 
 while True:
-    """"
+   
     now = time.ticks_ms()
 # Will count how long in between each signal, if that is over 300 ms, stop all motors.
     if (time.ticks_diff(now,start) >= 300):
@@ -93,5 +93,5 @@ while True:
         start = now
     # sleep as to not slam cpu
     time.sleep_ms(50)
-    """
-    continue
+   
+   
