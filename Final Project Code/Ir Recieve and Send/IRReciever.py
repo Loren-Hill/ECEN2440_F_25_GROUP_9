@@ -55,7 +55,7 @@ def ir_callback(data, addr, _):
         Left_Motor_PWM.duty_u16(pwm)
         Right_Motor.high() 
         Right_Motor_PWM.duty_u16(pwm) 
-    elif (data == 2):
+    elif (data == 2):   
         print("Right Turn") # Print to REPL
         Left_Motor.high()
         Left_Motor_PWM.duty_u16(pwm)
@@ -80,7 +80,7 @@ ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
 
 while True:
-    """"
+    
     now = time.ticks_ms()
 # Will count how long in between each signal, if that is over 300 ms, stop all motors.
     if (time.ticks_diff(now,start) >= 300):
@@ -93,5 +93,3 @@ while True:
         start = now
     # sleep as to not slam cpu
     time.sleep_ms(50)
-    """
-    continue
