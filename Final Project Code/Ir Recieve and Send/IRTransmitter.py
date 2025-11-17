@@ -1,3 +1,4 @@
+# Rename to main.py if transmitting
 import ir_tx
 import machine
 import seesaw
@@ -5,12 +6,15 @@ import time
 from machine import I2C, Pin
 from ir_tx.nec import NEC
 
+# CHANGE VARIABLES TO WHAT YOUR PINOUT IS
 # Pin Variables
 PinIr = 15 # Pin for IR transmitter
 PinScl = 17 # Pin for SCL on joystick
 PinSda = 16 # Pin for SDA on joystick
 PinJoyX = 14 # Pin for X value of joytstick
 PinJoyY = 15 # Pin for Y value of joystick
+
+
 
 # Setting device address for now, not sure if needed yet
 device_addr = 0x01
@@ -117,6 +121,7 @@ def handle_button_press(button):
 
 def main():
     """Main program loop."""
+
     global last_buttons, control_mode
     #setup_buttons()
    
@@ -124,6 +129,8 @@ def main():
     joystick_threshold = 50  # Adjust threshold as needed
    
     print("Starting main loop. Press buttons to test...")
+    # init motor_state
+    motor_state = 0xff
    
     while True:
         #current_buttons = read_buttons()
@@ -143,54 +150,82 @@ def main():
         current_y = seesaw_device.analog_read(JOYSTICK_Y_PIN)
        
         # Check if joystick position has changed significantly
-        if abs(current_x - last_x) > joystick_threshold or abs(current_y - last_y) > joystick_threshold:
-            control_mode = 'joystick'  # Switch to joystick control mode
-            print("Joystick moved - X:", current_x, ", Y:", current_y)
-            last_x, last_y = current_x, current_y
-           
-            # Turn off all LEDs
-            #for pin in led_pins.values():
-              #  pin.value(False)
-           
-             # Simple Implementation,
-            """"
-                4 commands for each state possible state of motors
-	            0x00 = motor 1 and motor 2 forward
-	            0x01 = motor 1 and motor 2 backwards
-	            0x02 = motor 1 forwards and motor 2 backwards
-	            0x03 = motor 1 backwards and motor 2 forward
-            """
-            if current_y < joystick_center_y - joystick_threshold:  # Joystick moved up
-                # Send a hex value through IR that will mean 100% motor up
-                    # X will be joystick center x
-                    # Y will be max value, or 1023
-                    motor_state = 0x00
-                    print('Motor Up')
-                    
-            elif current_y > joystick_center_y + joystick_threshold:  # Joystick moved down
-                # Send a hex value through IR that will mean 100% motor down
-                    # X will be joystick center x
-                    # Y will be min value, or 0
-                    motor_state = 0x01
-                    print('Motor Down')
-                    
+        #if abs(current_x - last_x) > joystick_threshold or abs(current_y - last_y) > joystick_threshold:
+        control_mode = 'joystick'  # Switch to joystick control mode
+        print("Joystick moved - X:", current_x, ", Y:", current_y)
+        last_x, last_y = current_x, current_y
+        
+        # Turn off all LEDs
+        #for pin in led_pins.values():
+            #  pin.value(False)
+        
+            # Simple Implementation,
+        """
+            4 commands for each state possible state of motors
+            0x00 = motor 1 and motor 2 forward
+            0x01 = motor 1 and motor 2 backwards
+            0x02 = motor 1 forwards and motor 2 backwards
+            0x03 = motor 1 backwards and motor 2 forward
+        """
+        """
+        # Will use current x and current y, from 0 - 1023, starting in bottom left, going top right
+        # Creating boolean true of false for if the stick is within the "deadzone" 
+        x_centered = joystick_center_x - joystick_threshold <= current_x <= joystick_center_x + joystick_threshold
+        y_centered = joystick_center_y - joystick_threshold <= current_y <= joystick_center_y + joystick_threshold
 
-            elif current_x < joystick_center_x - joystick_threshold:  # Joystick moved left
-                # Send a hex value through IR that will mean 100% motor left
-                    # X will be min value 0
-                    # Y will be joystick center y
-                    motor_state = 0x02
-                    print('Motor Right')
 
-            elif current_x > joystick_center_x + joystick_threshold:  # Joystick moved right
-                # Send a hex value through IR that will mean 100% motor right 
-                    # X will be max value 1023
-                    # Y will be joystick center y
-                    motor_state = 0x03
-                    print('Motor Left')
-                    
-            transmitter.transmit(device_addr,motor_state) # Transmit address and motor state
-       
+        
+        # If stick is in center, send a command to stop all motors
+        if x_centered and y_centered:
+            # centered
+        """
+
+
+
+        
+        if current_y < joystick_center_y - joystick_threshold:  # Joystick moved up
+            # Send a hex value through IR that will mean 100% motor up
+                # X will be joystick center x
+                # Y will be max value, or 1023
+                motor_state = 0x00
+                print('Motor Up')
+                
+        elif current_y > joystick_center_y + joystick_threshold:  # Joystick moved down
+            # Send a hex value through IR that will mean 100% motor down
+                # X will be joystick center x
+                # Y will be min value, or 0
+                motor_state = 0x01
+                print('Motor Down')
+                
+
+        elif current_x < joystick_center_x - joystick_threshold:  # Joystick moved right
+            # Send a hex value through IR that will mean 100% motor right
+                # X will be min value 0
+                # Y will be joystick center y
+                motor_state = 0x02
+                print('Motor Right')
+
+        elif current_x > joystick_center_x + joystick_threshold:  # Joystick moved left
+            # Send a hex value through IR that will mean 100% motor left 
+                # X will be max value 1023
+                # Y will be joystick center y
+                motor_state = 0x03
+                print('Motor Left')
+        elif       (current_x < joystick_center_x + joystick_threshold # Handles Joystick being in center x-axis
+                and current_x > joystick_center_x - joystick_threshold
+                and current_y < joystick_center_y + joystick_threshold # Handles Joystick being in center y-axis
+                and current_y > joystick_center_y - joystick_threshold
+            ):
+            # Send a hex value through IR that will mean motor off
+                # X will be value ~510
+                # Y will be value ~510
+                motor_state = 0x04 
+                print('motor Off')
+              
+            
+                
+        transmitter.transmit(device_addr,motor_state) # Transmit address and motor state
+            
         #last_buttons = current_buttons
         time.sleep(0.1)  # Delay to prevent overwhelming the output
 
