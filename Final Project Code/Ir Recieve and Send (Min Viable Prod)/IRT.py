@@ -88,8 +88,8 @@ last_buttons = 0
 
 
 # Initialize joystick center position
-joystick_center_x = 511
-joystick_center_y = 497
+joystick_center_x = 508
+joystick_center_y = 547
 
 
 # Control mode: 'button' or 'joystick'
