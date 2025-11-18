@@ -11,12 +11,12 @@ from ir_rx.print_error import print_error # for debugging
 time.sleep(1) # Wait for USB to become ready
 # CHANGE VARIABLES TO WHAT YOUR PINOUT IS
 # Pinout variables
-LMotor = 19
-LMotorPWM = 18
-RMotor = 17
-RMotorPWM = 16
+LMotor = 12
+LMotorPWM = 13
+RMotor = 14
+RMotorPWM = 15
 
-IRRPin = 15
+IRRPin = 18
 
 # This is Motor Code
 # Start ticker from code start

@@ -11,6 +11,7 @@ from ir_tx.nec import NEC
 PinIr = 15 # Pin for IR transmitter
 PinScl = 17 # Pin for SCL on joystick
 PinSda = 16 # Pin for SDA on joystick
+# Seesaw ADC channel 14 and 15 NOT pins on pico. "Virtual" pins, generally dont change
 PinJoyX = 14 # Pin for X value of joytstick
 PinJoyY = 15 # Pin for Y value of joystick
 
