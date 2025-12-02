@@ -88,8 +88,8 @@ last_buttons = 0
 
 
 # Initialize joystick center position
-joystick_center_x = 508
-joystick_center_y = 547
+joystick_center_x = seesaw_device.analog_read(JOYSTICK_X_PIN)
+joystick_center_y = seesaw_device.analog_read(JOYSTICK_Y_PIN)
 
 
 # Control mode: 'button' or 'joystick'
@@ -127,7 +127,7 @@ def main():
     #setup_buttons()
    
     last_x, last_y = seesaw_device.analog_read(JOYSTICK_X_PIN), seesaw_device.analog_read(JOYSTICK_Y_PIN)
-    joystick_threshold = 50  # Adjust threshold as needed
+    joystick_threshold = 150  # Adjust threshold as needed
    
     print("Starting main loop. Press buttons to test...")
     # init motor_state

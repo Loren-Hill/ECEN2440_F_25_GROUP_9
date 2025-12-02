@@ -30,7 +30,7 @@ Left_Motor_PWM = PWM(LMotorPWM, freq = pwm_rate, duty_u16 = 0)
 Right_Motor = Pin(RMotor, Pin.OUT) # 
 Right_Motor_PWM = PWM(RMotorPWM, freq = pwm_rate, duty_u16 = 0)
 
-pwm = min(max(int(2**16 * abs(1)), 0), 65535) * 0.5
+pwm = min(max(int(2**16 * abs(1)), 0), 65535) 
 
 
 
@@ -42,31 +42,31 @@ def ir_callback(data, addr, _):
     start = time.ticks_ms()
     if (data == 0):
         print("Motor Forward") # Print to REPL
-        Left_Motor.high() 
-        Left_Motor_PWM.duty_u16(int(pwm)) 
-        Right_Motor.low() 
-        Right_Motor_PWM.duty_u16(int(pwm)) 
+        Left_Motor.low() 
+        Left_Motor_PWM.duty_u16(pwm) 
+        Right_Motor.high() 
+        Right_Motor_PWM.duty_u16(pwm) 
     elif (data == 1):
         print("Motor Backwards") # Print to REPL
-        Left_Motor.low() 
-        Left_Motor_PWM.duty_u16(int(pwm))
-        Right_Motor.high() 
-        Right_Motor_PWM.duty_u16(int(pwm)) 
+        Left_Motor.high() 
+        Left_Motor_PWM.duty_u16(pwm)
+        Right_Motor.low() 
+        Right_Motor_PWM.duty_u16(pwm) 
     elif (data == 2):   
         print("Right Turn") # Print to REPL
-        Left_Motor.low()
-        Left_Motor_PWM.duty_u16(int(pwm))
+        Left_Motor.high()
+        Left_Motor_PWM.duty_u16(pwm)
         Right_Motor.high() 
-        Right_Motor_PWM.duty_u16(int(pwm))
+        Right_Motor_PWM.duty_u16(pwm)
     elif (data == 3): 
         print("Left Turn") # Print to REPL
-        Left_Motor.high()
-        Left_Motor_PWM.duty_u16(int(pwm))
+        Left_Motor.low()
+        Left_Motor_PWM.duty_u16(pwm)
         Right_Motor.low() 
-        Right_Motor_PWM.duty_u16(int(pwm)) 
+        Right_Motor_PWM.duty_u16(pwm) 
     elif (data == 4):
         print("Off") # Print to REPL
-        Left_Motor.high()
+        Left_Motor.low()
         Left_Motor_PWM.duty_u16(0)
         Right_Motor.low() 
         Right_Motor_PWM.duty_u16(0)            
@@ -82,11 +82,11 @@ ir_receiver = NEC_8(ir_pin, callback=ir_callback)
 
 
 def main():
+    global start
     while True:
-        
         now = time.ticks_ms()
     # Will count how long in between each signal, if that is over 300 ms, stop all motors.
-        if (time.ticks_diff(now,start) >= 300):
+        if (time.ticks_diff(now,start) >= 150):
             print("Motor off") # Print to REPL
             Left_Motor.low() 
             Left_Motor_PWM.duty_u16(0) 
