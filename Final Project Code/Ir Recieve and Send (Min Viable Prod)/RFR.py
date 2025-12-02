@@ -70,7 +70,7 @@ def main():
                 # Reset timer
                 # start = now
             
-            # sleep as to not slam cpu
-            time.sleep_ms(50)
+        # sleep as to not slam cpu
+        time.sleep_ms(50)
 if __name__ == "__main__":
     main()
