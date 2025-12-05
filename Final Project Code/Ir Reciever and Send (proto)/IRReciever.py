@@ -1,25 +1,23 @@
 # Code of IR Reciever
-# Rename to main.py if Recieving 
 import ir_rx
 import machine
+import main
 # load the MicroPython pulse-width-modulation module for driving hardware
 import math, time
 from machine import Pin
 from machine import PWM
 from ir_rx.nec import NEC_8 # Use the NEC 8-bit class
 from ir_rx.print_error import print_error # for debugging
-#Imports from IR Transmitter device address 
-import IRTransmitter
 
 time.sleep(1) # Wait for USB to become ready
 # CHANGE VARIABLES TO WHAT YOUR PINOUT IS
 # Pinout variables
-LMotor = 19
-LMotorPWM = 18
-RMotor = 17
-RMotorPWM = 16
+LMotor = 12
+LMotorPWM = 13
+RMotor = 14
+RMotorPWM = 15
 
-IRRPin = 15
+IRRPin = 18
 # What the device address is
 device_ad = 0xff
 
@@ -93,6 +91,10 @@ def No_Signal():
 
 # Function for IR interrupt
 def ir_callback(data, addr, _):
+    global last_input, Control_Law
+    if Control_Law != MODE_IR:
+        # We're not in IR mode, so ignore this command
+        return
     # Call motor functino
     IR_Motor(data,addr, _)
 
