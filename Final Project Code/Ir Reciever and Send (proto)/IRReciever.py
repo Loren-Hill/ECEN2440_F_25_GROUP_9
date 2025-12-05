@@ -1,8 +1,9 @@
 # Code of IR Reciever
 import ir_rx
 import machine
-import main
 # load the MicroPython pulse-width-modulation module for driving hardware
+import activity
+import MotorControl
 import math, time
 from machine import Pin
 from machine import PWM
@@ -11,90 +12,99 @@ from ir_rx.print_error import print_error # for debugging
 
 time.sleep(1) # Wait for USB to become ready
 # CHANGE VARIABLES TO WHAT YOUR PINOUT IS
-# Pinout variables
-LMotor = 12
-LMotorPWM = 13
-RMotor = 14
-RMotorPWM = 15
 
 IRRPin = 18
 # What the device address is
 device_ad = 0xff
 
-# This is Motor Code
-# Start ticker from code start
-last_input = time.ticks_ms()
+# Set Control_law and mode for this file
+RF_Control = 0
+IR_Control = 1
 
-pwm_rate = 2000
-#change pins if needed
-Left_Motor = Pin(LMotor, Pin.OUT) # 
-Left_Motor_PWM = PWM(LMotorPWM, freq = pwm_rate, duty_u16 = 0)
-# Right Motors
-Right_Motor = Pin(RMotor, Pin.OUT) # 
-Right_Motor_PWM = PWM(RMotorPWM, freq = pwm_rate, duty_u16 = 0)
+Control_Law = IR_Control  # default value
 
-pwm = min(max(int(2**16 * abs(1)), 0), 65535)
+def set_mode(mode):
+    global Control_Law
+    Control_Law = mode
 
 # Function for motor movement upon recieving IR Code
+# set PWM max value
+PWM_max = 65535
 
 def IR_Motor(data, addr, _):
+    global PWM_max
     # Handles 4 inputs for forward, backwards, left, and right.
-    # Start ticker from code start, every 300 ms turn off motors
-    global last_input
-    last_input = time.ticks_ms()
+    # Handler for if no signal recieved
+    activity.touch()
+
     if (data == 0 and addr == device_ad):
         print("Motor Forward") # Print to REPL
-        Left_Motor.low() 
-        Left_Motor_PWM.duty_u16(pwm) 
-        Right_Motor.low() 
-        Right_Motor_PWM.duty_u16(pwm) 
+        # Set both motors Forwards at max speed
+        # Left motor control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 1 
+        MotorControl.Left_Motor_Control(power,direction)
+        # Right Motor Control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 1
+        MotorControl.Right_Motor_Control(power,direction)
     elif (data == 1 and addr == device_ad):
         print("Motor Backwards") # Print to REPL
-        Left_Motor.high() 
-        Left_Motor_PWM.duty_u16(pwm)
-        Right_Motor.high() 
-        Right_Motor_PWM.duty_u16(pwm) 
+        # Set both motors backwards at max speed
+        # Left motor control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 0
+        MotorControl.Left_Motor_Control(power,direction)
+        # Right Motor Control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 0
+        MotorControl.Right_Motor_Control(power,direction)
     elif (data == 2 and addr == device_ad):   
         print("Right Turn") # Print to REPL
-        Left_Motor.high()
-        Left_Motor_PWM.duty_u16(pwm)
-        Right_Motor.low() 
-        Right_Motor_PWM.duty_u16(pwm)
+        # Sets left motor forward, right motor backwards
+        # Left motor control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 1 
+        MotorControl.Left_Motor_Control(power,direction)
+        # Right Motor Control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 0
+        MotorControl.Right_Motor_Control(power,direction)
     elif (data == 3 and addr == device_ad): 
         print("Left Turn") # Print to REPL
-        Left_Motor.low()
-        Left_Motor_PWM.duty_u16(pwm)
-        Right_Motor.high() 
-        Right_Motor_PWM.duty_u16(pwm) 
+        # Sets right motor forward and left motor backwards
+        # Left motor control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 0
+        MotorControl.Left_Motor_Control(power,direction)
+        # Right Motor Control
+        power = int(PWM_max) # Later will multiply PWM_Max by a value from 0 to 1 to change speed
+            # Direction, either 1 for forwards or 0 for backwards
+        direction = 1
+        MotorControl.Right_Motor_Control(power,direction)
     elif (data == 4 and addr == device_ad):
-        Motor_Off() 
+        MotorControl.Motor_Off() 
 
 # Function for turning motors off
-def Motor_Off ():
-    print("Off") # Print to REPL
-    Left_Motor.low()
-    Left_Motor_PWM.duty_u16(0)
-    Right_Motor.low() 
-    Right_Motor_PWM.duty_u16(0)
 
-# Function to handle 
-def No_Signal():
-    global last_input
-    now = time.ticks_ms()
-# Will count how long in between each signal, if that is over 300 ms, stop all motors.
-    if (time.ticks_diff(now,last_input) >= 300):
-        Motor_Off()
-        # Reset timer
-        last_input = now
-    # sleep as to not slam cpu
-    time.sleep_ms(50)
+
+
 
 # Function for IR interrupt
 def ir_callback(data, addr, _):
-    global last_input, Control_Law
-    if Control_Law != MODE_IR:
+    # Checking if IR is current mode
+    global Control_Law
+    if Control_Law != IR_Control:
         # We're not in IR mode, so ignore this command
         return
+    
     # Call motor functino
     IR_Motor(data,addr, _)
 
