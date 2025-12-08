@@ -12,8 +12,8 @@ from machine import PWM
 Max_No_Signal = 150
 
 # Define button pins
-Control_Button_Pin = 20
-Control_Button = Pin(Control_Button_Pin, Pin.IN,Pin.PULL_UP )
+Control_Button_Pin = 16
+Control_Button = Pin(Control_Button_Pin, Pin.IN,Pin.PULL_UP)
 # Setting Control_Law
 RF_Control = 0
 IR_Control = 1
@@ -65,9 +65,10 @@ def main():
         if Control_Law == IR_Control:
             # change for button as needed, run IR
             print("Run off of IR")
+            
         else:
             # change for button as needed, runs RF
-            print("Run off of RF")
+            #print("Run off of RF")
             RFReciever.RF_Reciever()
         # Govern to not blase CPU
         if activity.ms_since_last_activity() >= Max_No_Signal:

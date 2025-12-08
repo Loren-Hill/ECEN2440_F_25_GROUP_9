@@ -37,7 +37,7 @@ def IR_Motor(data, addr, _):
     # Handler for if no signal recieved
     activity.touch()
 
-    if (data == 0 and addr == device_ad):
+    if (data == 0):
         print("Motor Forward") # Print to REPL
         # Set both motors Forwards at max speed
         # Left motor control
@@ -50,7 +50,7 @@ def IR_Motor(data, addr, _):
             # Direction, either 1 for forwards or 0 for backwards
         direction = 1
         MotorControl.Right_Motor_Control(power,direction)
-    elif (data == 1 and addr == device_ad):
+    elif (data == 1):
         print("Motor Backwards") # Print to REPL
         # Set both motors backwards at max speed
         # Left motor control
@@ -63,7 +63,7 @@ def IR_Motor(data, addr, _):
             # Direction, either 1 for forwards or 0 for backwards
         direction = 0
         MotorControl.Right_Motor_Control(power,direction)
-    elif (data == 2 and addr == device_ad):   
+    elif (data == 2):   
         print("Right Turn") # Print to REPL
         # Sets left motor forward, right motor backwards
         # Left motor control
@@ -76,7 +76,7 @@ def IR_Motor(data, addr, _):
             # Direction, either 1 for forwards or 0 for backwards
         direction = 0
         MotorControl.Right_Motor_Control(power,direction)
-    elif (data == 3 and addr == device_ad): 
+    elif (data == 3): 
         print("Left Turn") # Print to REPL
         # Sets right motor forward and left motor backwards
         # Left motor control
@@ -89,7 +89,7 @@ def IR_Motor(data, addr, _):
             # Direction, either 1 for forwards or 0 for backwards
         direction = 1
         MotorControl.Right_Motor_Control(power,direction)
-    elif (data == 4 and addr == device_ad):
+    elif (data == 4):
         MotorControl.Motor_Off() 
 
 # Function for turning motors off
@@ -103,9 +103,11 @@ def ir_callback(data, addr, _):
     global Control_Law
     if Control_Law != IR_Control:
         # We're not in IR mode, so ignore this command
+        print("Not in IR")
         return
     
     # Call motor functino
+    print("in IR")
     IR_Motor(data,addr, _)
 
 # Setup the IR receiver

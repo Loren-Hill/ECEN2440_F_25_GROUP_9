@@ -47,7 +47,7 @@ def Right_Motor_Control(power,direction):
     Right_Motor_PWM.duty_u16(power)
 
 def Motor_Off ():
-    print("Off") # Print to REPL
+    #print("Off") # Print to REPL
     Left_Motor.low()
     Left_Motor_PWM.duty_u16(0)
     Right_Motor.low() 
